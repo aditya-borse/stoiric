@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import Calendar from "@/components/Calendar"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom"
 import NewDay from "@/components/NewDay"
 import ScorePage from "@/components/ScorePage"
 import Layout from "@/components/Layout"
@@ -10,6 +10,7 @@ import { getDailyData } from "@/utils/dailyStorage"
 import Logs from "@/components/Logs"
 
 function MainContent() {
+  const navigate = useNavigate();
   const dailyData = getDailyData();
   const hasTasks = dailyData?.tasks && dailyData.tasks.length > 0;
 
@@ -17,7 +18,7 @@ function MainContent() {
     <Layout>
       <div className="flex flex-col items-center gap-8 w-full max-w-4xl">
         <Button 
-          onClick={() => window.location.href = '/new-day'} 
+          onClick={() => navigate('/new-day')} 
           className="bg-zinc-700 hover:bg-zinc-600"
         >
           {hasTasks ? "VIEW TODAY'S TASKS" : "START A NEW DAY"}
