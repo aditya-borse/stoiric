@@ -7,6 +7,7 @@ import Layout from "@/components/Layout"
 import DailyReflection from "@/components/DailyReflection"
 import TotalScore from "@/components/TotalScore"
 import { getDailyData } from "@/utils/dailyStorage"
+import Logs from "@/components/Logs"
 
 function MainContent() {
   const dailyData = getDailyData();
@@ -39,6 +40,7 @@ function AppWrapper() {
         <Route path="/score" element={<ScorePage />} />
         <Route path="/reflect" element={<Layout><DailyReflection /></Layout>} />
         <Route path="/total-score" element={<TotalScore />} />
+        <Route path="/logs" element={<Logs />} />
       </Routes>
     </BrowserRouter>
   );

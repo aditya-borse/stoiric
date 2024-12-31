@@ -61,3 +61,19 @@ export const isDayCompleted = () => {
   const dailyData = getDailyData();
   return dailyData?.isDayCompleted || false;
 };
+
+export const getAllDailyLogs = () => {
+  const logs = [];
+  const keyPrefix = 'stoiric_';
+  
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key?.startsWith(keyPrefix)) {
+      const data = JSON.parse(localStorage.getItem(key));
+      const date = key.replace(keyPrefix, '');
+      logs.push({ date, ...data });
+    }
+  }
+  
+  return logs.sort((a, b) => new Date(b.date) - new Date(a.date));
+};

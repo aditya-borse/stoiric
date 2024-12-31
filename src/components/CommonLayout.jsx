@@ -1,4 +1,4 @@
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
 import { useNavigate } from "react-router-dom"
@@ -49,17 +49,34 @@ export function Navigation() {
             <Menu className="h-6 w-6" />
           </Button> 
         </SheetTrigger>
-        <SheetContent className="bg-zinc-800 text-white">
-          <div className="flex flex-col gap-4 mt-8">
+        <SheetContent className="bg-zinc-900 border-zinc-800 text-white w-[280px] sm:w-[340px]">
+          <SheetTitle className="text-2xl font-bold text-white pb-2">
+            MENU
+          </SheetTitle>
+          <SheetDescription className="text-sm text-zinc-400 border-b border-zinc-800 pb-4">
+            Access different sections of Stoiric
+          </SheetDescription>
+          <div className="flex flex-col gap-2 mt-6">
             <Button 
               variant="ghost" 
-              className="w-full text-left"
+              className="w-full text-left text-zinc-100 hover:text-white hover:bg-zinc-800 transition-colors"
               onClick={() => navigate('/')}
             >
               HOME
             </Button>
-            <Button variant="ghost" className="w-full text-left">HISTORY</Button>
-            <Button variant="ghost" className="w-full text-left">ABOUT US</Button>
+            <Button 
+              variant="ghost" 
+              className="w-full text-left text-zinc-100 hover:text-white hover:bg-zinc-800 transition-colors"
+              onClick={() => navigate('/logs')}
+            >
+              DAILY LOG
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="w-full text-left text-zinc-100 hover:text-white hover:bg-zinc-800 transition-colors"
+            >
+              ABOUT US
+            </Button>
           </div>
         </SheetContent>
       </Sheet>
