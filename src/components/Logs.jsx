@@ -2,7 +2,7 @@ import { getAllDailyLogs } from "@/utils/dailyStorage";
 import Layout from "@/components/Layout";
 import LogBento from "./LogBento";
 import { useState, useEffect } from "react";
-import { ChevronDown, ChevronUp, Download } from "lucide-react";
+import { ChevronDown, ChevronUp, Download, Trash2 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 
 export default function Logs() {
@@ -39,18 +39,34 @@ export default function Logs() {
     URL.revokeObjectURL(url);
   };
 
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete all logs? This action cannot be undone.")) {
+      localStorage.clear();
+      window.location.reload();
+    }
+  };
+
   return (
     <Layout>
       <div className="w-full max-w-6xl mx-auto px-4 relative">
         {logs.length > 0 ? (
           <>
-            <button
-              onClick={handleDownload}
-              className="absolute right-6 top-0 p-2 text-zinc-400 hover:text-zinc-100 transition-colors"
-              title="Download logs"
-            >
-              <Download className="h-5 w-5" />
-            </button>
+            <div className="absolute right-6 top-0 flex gap-2">
+              <button
+                onClick={handleDelete}
+                className="p-2 text-zinc-400 hover:text-red-400 transition-colors"
+                title="Delete all logs"
+              >
+                <Trash2 className="h-5 w-5" />
+              </button>
+              <button
+                onClick={handleDownload}
+                className="p-2 text-zinc-400 hover:text-zinc-100 transition-colors"
+                title="Download logs"
+              >
+                <Download className="h-5 w-5" />
+              </button>
+            </div>
             
             <h2 className="text-2xl font-bold mb-8 text-center">Daily Logs</h2>
             <div className="space-y-4">
