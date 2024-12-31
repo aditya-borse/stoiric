@@ -3,6 +3,7 @@ import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import { ArrowRight, Flame, BookMarked, Quote as QuoteIcon, Github, Play, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useAuth } from '@/context/AuthContext';
 
 const FeatureCard = ({ icon: Icon, title, description }) => (
     <motion.div
@@ -19,6 +20,20 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
 
 export default function LandingPage() {
     const navigate = useNavigate();
+    const { user, signInWithGoogle } = useAuth();
+
+    const handleGetStarted = async () => {
+        if (user) {
+            navigate('/app');
+        } else {
+            try {
+                await signInWithGoogle();
+                navigate('/app');
+            } catch (error) {
+                console.error('Auth error:', error);
+            }
+        }
+    };
 
     return (
         <div className="min-h-screen bg-zinc-900 text-white">
@@ -40,13 +55,15 @@ export default function LandingPage() {
                     >
                         <Github className="h-5 w-5" />
                     </a>
-                    {/* <Button
-                        variant="outline"
-                        onClick={() => navigate('/app')}
-                        className="border-zinc-700 text-zinc-400 hover:text-amber-400 hover:border-amber-400/50 transition-colors"
-                    >
-                        Enter App
-                    </Button> */}
+                    {/* {user ? (
+                        <Button
+                            variant="outline"
+                            onClick={() => navigate('/app')}
+                            className="border-zinc-700 text-zinc-400 hover:text-amber-400 hover:border-amber-400/50 transition-colors"
+                        >
+                            Enter App
+                        </Button>
+                    ) : null} */}
                 </div>
             </nav>
 
@@ -65,10 +82,10 @@ export default function LandingPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Button
-                            onClick={() => navigate('/app')}
+                            onClick={handleGetStarted}
                             className="bg-amber-400 hover:bg-amber-500 text-black font-medium px-8 py-6 w-full sm:w-auto"
                         >
-                            Begin Your Journey <ArrowRight className="ml-2 h-5 w-5" />
+                            {user ? 'Enter App' : 'Begin Your Journey '} <ArrowRight className="ml-2 h-5 w-5" />
                         </Button>
                         <Button
                             variant="outline"

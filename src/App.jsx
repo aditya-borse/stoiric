@@ -11,6 +11,8 @@ import Logs from "@/components/Logs"
 import AboutUs from "@/components/AboutUs"
 import LandingPage from "@/components/LandingPage"
 import NotFound from "@/components/NotFound"
+import { AuthProvider } from '@/context/AuthContext';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 function MainContent() {
   const navigate = useNavigate();
@@ -37,19 +39,21 @@ function MainContent() {
 
 function AppWrapper() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/app" element={<MainContent />} />
-        <Route path="/new-day" element={<NewDay />} />
-        <Route path="/score" element={<ScorePage />} />
-        <Route path="/reflect" element={<Layout><DailyReflection /></Layout>} />
-        <Route path="/total-score" element={<TotalScore />} />
-        <Route path="/logs" element={<Logs />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/app" element={<ProtectedRoute><MainContent /></ProtectedRoute>} />
+          <Route path="/new-day" element={<ProtectedRoute><NewDay /></ProtectedRoute>} />
+          <Route path="/score" element={<ProtectedRoute><ScorePage /></ProtectedRoute>} />
+          <Route path="/reflect" element={<ProtectedRoute><Layout><DailyReflection /></Layout></ProtectedRoute>} />
+          <Route path="/total-score" element={<ProtectedRoute><TotalScore /></ProtectedRoute>} />
+          <Route path="/logs" element={<ProtectedRoute><Logs /></ProtectedRoute>} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

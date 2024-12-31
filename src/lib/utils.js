@@ -1,6 +1,11 @@
-import { clsx } from "clsx";
-import { twMerge } from "tailwind-merge"
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
-export function cn(...inputs) {
+/**
+ * Combines and merges class names using clsx and tailwind-merge
+ */
+const cn = (...inputs) => {
   return twMerge(clsx(inputs));
-}
+};
+
+export { cn };

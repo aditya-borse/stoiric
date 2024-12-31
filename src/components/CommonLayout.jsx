@@ -1,9 +1,18 @@
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
+import { Menu, User, LogOut } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { calculateStreak } from '@/utils/dailyStorage';
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/context/AuthContext'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const formatToday = () => {
   const today = new Date();
@@ -111,6 +120,7 @@ export function Quote() {
 
 export function Navigation() {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   return (
     <nav className="flex justify-between items-center p-7 mb-4">
@@ -130,9 +140,28 @@ export function Navigation() {
           <SheetTitle className="text-2xl font-bold text-white pb-2">
             MENU
           </SheetTitle>
-          <SheetDescription className="text-sm text-zinc-400 border-b border-zinc-800 pb-4">
-            Access different sections of Stoiric
-          </SheetDescription>
+          {user && (
+            <div className="flex items-center gap-4 py-4 border-b border-zinc-800">
+              <div className="h-10 w-10 rounded-full overflow-hidden">
+                {user.photoURL ? (
+                  <img 
+                    src={user.photoURL} 
+                    alt="profile" 
+                    className="h-full w-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-zinc-800 flex items-center justify-center">
+                    <User className="h-5 w-5 text-zinc-400" />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-zinc-200">{user.displayName || 'User'}</p>
+                <p className="text-xs text-zinc-400">{user.email}</p>
+              </div>
+            </div>
+          )}
           <div className="flex flex-col gap-2 mt-6">
             <Button 
               variant="ghost" 
@@ -155,6 +184,16 @@ export function Navigation() {
             >
               ABOUT US
             </Button>
+            {user && (
+              <Button 
+                variant="ghost" 
+                className="w-full text-left text-red-400 hover:text-red-300 hover:bg-zinc-800 transition-colors"
+                onClick={logout}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                LOG OUT
+              </Button>
+            )}
           </div>
         </SheetContent>
       </Sheet>
