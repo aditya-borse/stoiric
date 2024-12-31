@@ -116,7 +116,7 @@ export function Navigation() {
     <nav className="flex justify-between items-center p-7 mb-4">
       <h1 
         className="text-2xl font-bold cursor-pointer hover:text-amber-400 transition-colors"
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/app')}
       >
         STOIRIC
       </h1>
@@ -137,7 +137,7 @@ export function Navigation() {
             <Button 
               variant="ghost" 
               className="w-full text-left text-zinc-100 hover:text-white hover:bg-zinc-800 transition-colors"
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/app')}
             >
               HOME
             </Button>
@@ -151,6 +151,7 @@ export function Navigation() {
             <Button 
               variant="ghost" 
               className="w-full text-left text-zinc-100 hover:text-white hover:bg-zinc-800 transition-colors"
+              onClick={() => navigate('/about')}
             >
               ABOUT US
             </Button>

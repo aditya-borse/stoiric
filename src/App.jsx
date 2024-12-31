@@ -8,6 +8,9 @@ import DailyReflection from "@/components/DailyReflection"
 import TotalScore from "@/components/TotalScore"
 import { getDailyData } from "@/utils/dailyStorage"
 import Logs from "@/components/Logs"
+import AboutUs from "@/components/AboutUs"
+import LandingPage from "@/components/LandingPage"
+import NotFound from "@/components/NotFound"
 
 function MainContent() {
   const navigate = useNavigate();
@@ -21,7 +24,7 @@ function MainContent() {
           onClick={() => navigate('/new-day')} 
           className="bg-zinc-700 hover:bg-zinc-600"
         >
-          {hasTasks ? "VIEW TODAY'S TASKS" : "START A NEW DAY"}
+          {hasTasks ? "VIEW TODAY'S GOALS" : "START YOUR DAY"}
         </Button>
 
         <div className="min-w-[300px] max-w-[350px] flex items-center justify-center mb-8">
@@ -36,12 +39,15 @@ function AppWrapper() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MainContent />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/app" element={<MainContent />} />
         <Route path="/new-day" element={<NewDay />} />
         <Route path="/score" element={<ScorePage />} />
         <Route path="/reflect" element={<Layout><DailyReflection /></Layout>} />
         <Route path="/total-score" element={<TotalScore />} />
         <Route path="/logs" element={<Logs />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
