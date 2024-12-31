@@ -125,3 +125,8 @@ export const calculateStreak = () => {
 
   return currentStreak;
 };
+
+export const hasTodayTasks = () => {
+  const dailyData = getDailyData();
+  return dailyData?.tasks && dailyData.tasks.length > 0;
+};

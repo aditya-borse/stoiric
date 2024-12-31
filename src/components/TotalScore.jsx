@@ -3,7 +3,7 @@ import Layout from "./Layout";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import confetti from "canvas-confetti";
-import { getDailyData, updateFinalScore } from "@/utils/dailyStorage";
+import { getDailyData, updateFinalScore, hasTodayTasks } from "@/utils/dailyStorage";
 import {
   Tooltip,
   TooltipContent,
@@ -18,6 +18,11 @@ export default function TotalScore() {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   useEffect(() => {
+    if (!hasTodayTasks()) {
+      navigate('/app');
+      return;
+    }
+
     const dailyData = getDailyData();
     if (dailyData) {
       const { totalTasks = 0, completedTasks = 0, totalRating = 0 } = dailyData;
@@ -77,10 +82,10 @@ export default function TotalScore() {
         </div>
 
         <Button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/app')}
           className="w-full bg-zinc-800 hover:bg-zinc-700 py-6 text-lg"
         >
-          GO TO HOME
+          GO HOME
         </Button>
       </div>
     </Layout>

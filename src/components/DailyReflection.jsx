@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Send, Bot, User, ArrowUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { updateReflectionAnswers, getDailyData } from "@/utils/dailyStorage";
+import { updateReflectionAnswers, getDailyData, hasTodayTasks } from "@/utils/dailyStorage";
 
 const questions = [
   "Did you achieve your priority of the day?",
@@ -34,6 +34,11 @@ export default function DailyReflection() {
   }, [messages]);
 
   useEffect(() => {
+    if (!hasTodayTasks()) {
+      navigate('/app');
+      return;
+    }
+    
     if (messages.length === 0) {
       
       const dailyData = getDailyData();
