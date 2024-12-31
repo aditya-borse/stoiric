@@ -1,12 +1,21 @@
 import { getAllDailyLogs } from "@/utils/dailyStorage";
 import Layout from "@/components/Layout";
 import LogBento from "./LogBento";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp, Download } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 
 export default function Logs() {
-  const [expandedDate, setExpandedDate] = useState(null);
+  const [searchParams] = useSearchParams();
+  const dateParam = searchParams.get('date');
+  const [expandedDate, setExpandedDate] = useState(dateParam);
   const logs = getAllDailyLogs();
+
+  useEffect(() => {
+    if (dateParam) {
+      setExpandedDate(dateParam);
+    }
+  }, [dateParam]);
 
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -33,36 +42,44 @@ export default function Logs() {
   return (
     <Layout>
       <div className="w-full max-w-6xl mx-auto px-4 relative">
-        <button
-          onClick={handleDownload}
-          className="absolute right-6 top-0 p-2 text-zinc-400 hover:text-zinc-100 transition-colors"
-          title="Download logs"
-        >
-          <Download className="h-5 w-5" />
-        </button>
-        
-        <h2 className="text-2xl font-bold mb-8 text-center">Daily Logs</h2>
-        <div className="space-y-4">
-          {logs.map((log) => (
-            <div key={log.date} className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden mb-4">
-              <button 
-                className="w-full px-6 py-4 flex justify-between items-center hover:bg-zinc-800/50 transition-colors"
-                onClick={() => setExpandedDate(expandedDate === log.date ? null : log.date)}
-              >
-                <h3 className="text-lg font-medium">{formatDate(log.date)}</h3>
-                {expandedDate === log.date ? (
-                  <ChevronUp className="h-5 w-5 text-zinc-400" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-zinc-400" />
-                )}
-              </button>
-              
-              {expandedDate === log.date && (
-                <LogBento log={log} />
-              )}
+        {logs.length > 0 ? (
+          <>
+            <button
+              onClick={handleDownload}
+              className="absolute right-6 top-0 p-2 text-zinc-400 hover:text-zinc-100 transition-colors"
+              title="Download logs"
+            >
+              <Download className="h-5 w-5" />
+            </button>
+            
+            <h2 className="text-2xl font-bold mb-8 text-center">Daily Logs</h2>
+            <div className="space-y-4">
+              {logs.map((log) => (
+                <div key={log.date} className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden mb-4">
+                  <button 
+                    className="w-full px-6 py-4 flex justify-between items-center hover:bg-zinc-800/50 transition-colors"
+                    onClick={() => setExpandedDate(expandedDate === log.date ? null : log.date)}
+                  >
+                    <h3 className="text-lg font-medium">{formatDate(log.date)}</h3>
+                    {expandedDate === log.date ? (
+                      <ChevronUp className="h-5 w-5 text-zinc-400" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5 text-zinc-400" />
+                    )}
+                  </button>
+                  
+                  {expandedDate === log.date && (
+                    <LogBento log={log} />
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        ) : (
+          <div className="flex items-center justify-center h-[50vh]">
+            <p className="text-zinc-400 text-lg">No logs yet, start journaling!</p>
+          </div>
+        )}
       </div>
     </Layout>
   );

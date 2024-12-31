@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
+import { getCompletedDays } from "@/utils/dailyStorage";
+import { useNavigate } from 'react-router-dom';
 
 function Calendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const today = new Date();
+  const navigate = useNavigate();
+  const completedDays = getCompletedDays();
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -13,6 +17,22 @@ function Calendar() {
   };
 
   const days = getDaysInMonth(currentMonth);
+
+  const getColorForScore = (score) => {
+    const scorePercentage = score || 0;
+    if (scorePercentage >= 80) return 'bg-green-900';
+    if (scorePercentage >= 60) return 'bg-green-800';
+    if (scorePercentage >= 40) return 'bg-green-700';
+    if (scorePercentage >= 20) return 'bg-green-600';
+    return 'bg-green-500';
+  };
+
+  const handleDayClick = (date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    if (completedDays[dateStr]) {
+      navigate(`/logs?date=${dateStr}`);
+    }
+  };
 
   return (
     <div className="w-full max-w-sm md:max-w-md lg:max-w-lg">
@@ -50,17 +70,28 @@ function Calendar() {
         
         {/* days */}
         {days.map((day) => {
+          const currentDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+          const dateStr = currentDate.toISOString().split('T')[0];
           const isToday = 
             today.getDate() === day &&
             today.getMonth() === currentMonth.getMonth() &&
             today.getFullYear() === currentMonth.getFullYear();
+          const isCompleted = completedDays[dateStr];
+          
+          let className = 'aspect-square flex items-center justify-center text-sm rounded-lg ';
+          if (isCompleted) {
+            className += `${getColorForScore(completedDays[dateStr])} cursor-pointer`;
+          } else if (isToday) {
+            className += 'bg-amber-500 text-black';
+          } else {
+            className += 'bg-zinc-700 hover:bg-zinc-600';
+          }
 
           return (
             <div
               key={day}
-              className={`aspect-square flex items-center justify-center text-sm rounded-lg
-                ${isToday ? 'bg-green-500' : 'bg-zinc-700'} 
-                hover:bg-zinc-600 cursor-pointer`}
+              className={className}
+              onClick={() => handleDayClick(currentDate)}
             >
               {day}
             </div> 
