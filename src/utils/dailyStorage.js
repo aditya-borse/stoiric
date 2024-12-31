@@ -1,10 +1,13 @@
-const getDailyKey = (date) => {
-  return `stoiric_${date}`;
+const formatDate = (date) => {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 };
 
 const getCurrentDate = () => {
-  const date = new Date("2024-12-30T18:43:29+05:30");
-  return date.toISOString().split('T')[0];
+  return formatDate(new Date());
+};
+
+const getDailyKey = (date) => {
+  return `stoiric_${date}`;
 };
 
 export const storeDailyData = (data) => {
@@ -89,6 +92,7 @@ export const getCompletedDays = () => {
       if (data.isDayCompleted) {
         const date = key.replace(keyPrefix, '');
         logs[date] = data.finalScore || 0;
+        // console.log('Found completed day in storage:', date, data); // Debug log
       }
     }
   }
@@ -102,13 +106,12 @@ export const calculateStreak = () => {
   
   if (dates.length === 0) return 0;
 
-  const today = new Date(getCurrentDate());
-  const yesterday = new Date(today);
+  const today = getCurrentDate();
+  const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  const yesterdayStr = formatDate(yesterday);
 
-  if (!completedDays[today.toISOString().split('T')[0]] && 
-      !completedDays[yesterdayStr]) {
+  if (!completedDays[today] && !completedDays[yesterdayStr]) {
     return 0;
   }
 

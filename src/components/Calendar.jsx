@@ -28,11 +28,17 @@ function Calendar() {
   };
 
   const handleDayClick = (date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = formatDate(date); // Use the same date format as storage
     if (completedDays[dateStr]) {
       navigate(`/logs?date=${dateStr}`);
     }
   };
+
+  const formatDate = (date) => {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  };
+
+  // console.log('Completed days:', completedDays);
 
   return (
     <div className="w-full max-w-sm md:max-w-md lg:max-w-lg">
@@ -71,13 +77,16 @@ function Calendar() {
         {/* days */}
         {days.map((day) => {
           const currentDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-          const dateStr = currentDate.toISOString().split('T')[0];
-          const isToday = 
-            today.getDate() === day &&
-            today.getMonth() === currentMonth.getMonth() &&
-            today.getFullYear() === currentMonth.getFullYear();
+          const dateStr = formatDate(currentDate);
+          const isToday = formatDate(today) === dateStr; 
           const isCompleted = completedDays[dateStr];
           
+          if (isCompleted) {
+            {/* console.log('Found completed day:', dateStr, 'with score:', completedDays[dateStr]); */}
+          }
+
+          {/* console.log('Checking date:', dateStr, 'isCompleted:', isCompleted, 'isToday:', isToday); */}
+
           let className = 'aspect-square flex items-center justify-center text-sm rounded-lg ';
           if (isCompleted) {
             className += `${getColorForScore(completedDays[dateStr])} cursor-pointer`;
