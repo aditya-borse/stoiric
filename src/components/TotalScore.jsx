@@ -3,6 +3,10 @@ import Layout from "./Layout";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import confetti from "canvas-confetti";
+import html2canvas from 'html2canvas';
+import { Share2 } from 'lucide-react';
+import { useAuth } from "@/context/AuthContext";
+import ShareableImage from "./ShareableImage";
 import { getDailyData, updateFinalScore, hasTodayTasks } from "@/utils/dailyStorage";
 import {
   Tooltip,
@@ -14,8 +18,10 @@ import { HelpCircle } from "lucide-react";
 
 export default function TotalScore() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [score, setScore] = useState(null);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
   useEffect(() => {
     if (!hasTodayTasks()) {
@@ -42,6 +48,38 @@ export default function TotalScore() {
       }
     }
   }, []);
+
+  const handleShare = async () => {
+    setIsGeneratingImage(true);
+    const shareableElement = document.getElementById('shareable-image');
+    
+    try {
+      const canvas = await html2canvas(shareableElement, {
+        scale: 1,
+        backgroundColor: '#18181B',
+      });
+      
+      const image = canvas.toDataURL('image/png');
+      const blob = await (await fetch(image)).blob();
+      
+      if (navigator.share) {
+        await navigator.share({
+          files: [new File([blob], 'stoiric-score.png', { type: 'image/png' })],
+          title: 'My Stoiric Score',
+          text: 'Check out my daily wisdom score on Stoiric!'
+        });
+      } else {
+        const link = document.createElement('a');
+        link.download = 'stoiric-score.png';
+        link.href = image;
+        link.click();
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
 
   return (
     <Layout>
@@ -81,12 +119,30 @@ export default function TotalScore() {
           <p className="text-zinc-400">out of 100</p>
         </div>
 
-        <Button
-          onClick={() => navigate('/app')}
-          className="w-full bg-zinc-800 hover:bg-zinc-700 py-6 text-lg"
-        >
-          GO HOME
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            onClick={() => navigate('/app')}
+            className="flex-1 bg-zinc-800 hover:bg-zinc-700 py-6 text-lg"
+          >
+            GO HOME
+          </Button>
+          <Button
+            onClick={handleShare}
+            disabled={isGeneratingImage}
+            className="flex-1 bg-amber-600 hover:bg-amber-700 py-6 text-lg"
+          >
+            <Share2 className="w-5 h-5 mr-2" />
+            {isGeneratingImage ? 'Generating...' : 'Share'}
+          </Button>
+        </div>
+
+        {/* Hidden shareable image container */}
+        <div className="fixed left-0 top-0 opacity-0 pointer-events-none">
+          <ShareableImage 
+            score={score} 
+            userName={user?.displayName || 'Stoic Seeker'} 
+          />
+        </div>
       </div>
     </Layout>
   );
