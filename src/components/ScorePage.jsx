@@ -4,7 +4,7 @@ import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useNavigate } from "react-router-dom"
-import { updateDailyScore, getDailyData } from "@/utils/dailyStorage"
+import { updateDailyScore, getDailyData, hasTodayTasks } from "@/utils/dailyStorage"
 
 const metrics = [
   { label: "Focus" },
@@ -14,7 +14,7 @@ const metrics = [
   { label: "Satisfaction" }
 ];
 
-const ScoreMetric = ({ label, value, onChange }) => {
+const ScoreMetric = ({ label, value, onChange, readonly }) => {
   return (
     <Card className="bg-zinc-800/50 backdrop-blur-sm border-zinc-700/50 mb-4">
       <CardContent className="pt-6">
@@ -32,9 +32,10 @@ const ScoreMetric = ({ label, value, onChange }) => {
           min={0}
           max={10}
           step={1}
-          onValueChange={([newValue]) => onChange(newValue)}
-          className="cursor-pointer [&>[role=slider]]:bg-amber-400 [&>span]:bg-zinc-900 [&>span>span]:bg-white"
+          onValueChange={([newValue]) => !readonly && onChange(newValue)}
+          className={`${readonly ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} [&>[role=slider]]:bg-amber-400 [&>span]:bg-zinc-900 [&>span>span]:bg-white`}
           defaultValue={[0]}
+          disabled={readonly}
         />
       </CardContent>
     </Card>
@@ -46,15 +47,25 @@ export default function ScorePage() {
   const [scores, setScores] = useState(
     Object.fromEntries(metrics.map(m => [m.label, 0]))
   );
+  const [isFinalized, setIsFinalized] = useState(false);
 
   useEffect(() => {
+    if (!hasTodayTasks()) {
+      navigate('/app');
+      return;
+    }
+
     const dailyData = getDailyData();
     if (dailyData?.scores) {
       setScores(dailyData.scores);
     }
+    if (dailyData?.finalScore !== undefined) {
+      setIsFinalized(true);
+    }
   }, []);
 
   const handleScoreChange = (metric, value) => {
+    if (isFinalized) return;
     const newScores = { ...scores, [metric]: value };
     setScores(newScores);
     updateDailyScore(newScores);
@@ -73,17 +84,20 @@ export default function ScorePage() {
             label={label}
             value={scores[label]}
             onChange={(value) => handleScoreChange(label, value)}
+            readonly={isFinalized}
           />
         ))}
 
-        <div className="mt-6">
-          <Button 
-            onClick={() => navigate('/total-score')}
-            className="w-full bg-zinc-700 hover:bg-zinc-600"
-          >
-            CALCULATE TOTAL SCORE
-          </Button>
-        </div>
+        {!isFinalized && (
+          <div className="mt-6">
+            <Button 
+              onClick={() => navigate('/total-score')}
+              className="w-full bg-zinc-700 hover:bg-zinc-600"
+            >
+              CALCULATE TOTAL SCORE
+            </Button>
+          </div>
+        )}
       </div>
     </Layout>
   );
