@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import logo from '@/assets/logo.png'
 
 const formatToday = () => {
   const today = new Date();
@@ -124,12 +125,12 @@ export function Navigation() {
 
   return (
     <nav className="flex justify-between items-center p-7 mb-4">
-      <h1 
-        className="text-2xl font-bold cursor-pointer hover:text-amber-400 transition-colors"
+      <img 
+        src={logo} 
+        alt="STOIRIC"
+        className="h-6 sm:h-8 cursor-pointer hover:opacity-80 transition-opacity"
         onClick={() => navigate('/app')}
-      >
-        STOIRIC
-      </h1>
+      />
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon">

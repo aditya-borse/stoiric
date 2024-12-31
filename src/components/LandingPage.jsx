@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { ArrowRight, Flame, BookMarked, Quote as QuoteIcon, Github, Play, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from '@/context/AuthContext';
+import logo from '@/assets/logo.png';
 
 const FeatureCard = ({ icon: Icon, title, description }) => (
     <motion.div
@@ -39,13 +40,13 @@ export default function LandingPage() {
         <div className="min-h-screen bg-zinc-900 text-white">
             {/* Hero Section */}
             <nav className="flex justify-between items-center p-7">
-                <motion.h1
+                <motion.img
+                    src={logo}
+                    alt="STOIRIC"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-2xl font-bold"
-                >
-                    STOIRIC
-                </motion.h1>
+                    className="h-6 sm:h-8"
+                />
                 <div className="flex items-center gap-4">
                     <a
                         href="https://github.com/aditya-borse/stoiric"
