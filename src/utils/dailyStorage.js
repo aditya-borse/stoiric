@@ -1,3 +1,21 @@
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
+
+const encryptData = (data) => {
+  return CryptoJS.AES.encrypt(JSON.stringify(data), SECRET_KEY).toString();
+};
+
+const decryptData = (cipherText) => {
+  try {
+    const bytes = CryptoJS.AES.decrypt(cipherText, SECRET_KEY);
+    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+  } catch (error) {
+    console.error("Decryption error:", error);
+    return null;
+  }
+};
+
 const formatDate = (date) => {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 };
@@ -14,15 +32,16 @@ export const storeDailyData = (data) => {
   const currentDate = getCurrentDate();
   const key = getDailyKey(currentDate);
   
-  localStorage.setItem(key, JSON.stringify(data));
+  const encryptedData = encryptData(data); 
+  localStorage.setItem(key, encryptedData);
 };
 
 export const getDailyData = () => {
   const currentDate = getCurrentDate();
   const key = getDailyKey(currentDate);
   
-  const data = localStorage.getItem(key);
-  return data ? JSON.parse(data) : null;
+  const encryptedData = localStorage.getItem(key);
+  return encryptedData ? decryptData(encryptedData) : null; 
 };
 
 export const updateDailyData = (updates) => {
@@ -72,7 +91,8 @@ export const getAllDailyLogs = () => {
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key?.startsWith(keyPrefix)) {
-      const data = JSON.parse(localStorage.getItem(key));
+      const encryptedData = localStorage.getItem(key);
+      const data = decryptData(encryptedData); 
       const date = key.replace(keyPrefix, '');
       logs.push({ date, ...data });
     }
@@ -88,11 +108,11 @@ export const getCompletedDays = () => {
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key?.startsWith(keyPrefix)) {
-      const data = JSON.parse(localStorage.getItem(key));
-      if (data.isDayCompleted) {
+      const encryptedData = localStorage.getItem(key);
+      const data = decryptData(encryptedData); 
+      if (data?.isDayCompleted) {
         const date = key.replace(keyPrefix, '');
         logs[date] = data.finalScore || 0;
-        // console.log('Found completed day in storage:', date, data); // Debug log
       }
     }
   }
