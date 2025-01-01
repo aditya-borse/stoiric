@@ -90,7 +90,7 @@ export default function LandingPage() {
                         </Button>
                         <Button
                             variant="outline"
-                            onClick={() => window.open('YOUR_VIDEO_DEMO_URL', '_blank')}
+                            onClick={() => window.open('https://youtu.be/BubOvqRUyDI', '_blank')}
                             className="border-zinc-700 bg-zinc-800 text-zinc-300 px-8 py-6 w-full sm:w-auto"
                         >
                             Watch Demo <Play className="ml-2 h-4 w-4" />
