@@ -54,9 +54,11 @@ export const updateDailyScore = (scores) => {
 };
 
 export const updateFinalScore = (finalScore) => {
+  const pendingJournal = getPendingJournalData();
   return updateDailyData({
     finalScore,
-    isDayCompleted: true
+    isDayCompleted: true,
+    completedDate: pendingJournal ? pendingJournal.date : getCurrentDate()
   });
 };
 
@@ -100,6 +102,29 @@ export const getCompletedDays = () => {
   return logs;
 };
 
+const getIncompleteJournalDate = () => {
+  const keyPrefix = 'stoiric_';
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key?.startsWith(keyPrefix)) {
+      const data = JSON.parse(localStorage.getItem(key));
+      if (data.tasks && data.tasks.length > 0 && !data.isDayCompleted) {
+        return key.replace(keyPrefix, '');
+      }
+    }
+  }
+  return null;
+};
+
+export const getPendingJournalData = () => {
+  const date = getIncompleteJournalDate();
+  if (!date) return null;
+  
+  const key = getDailyKey(date);
+  const data = localStorage.getItem(key);
+  return data ? { date, ...JSON.parse(data) } : null;
+};
+
 export const calculateStreak = () => {
   const completedDays = getCompletedDays();
   const dates = Object.keys(completedDays).sort((a, b) => new Date(b) - new Date(a));
@@ -111,7 +136,10 @@ export const calculateStreak = () => {
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = formatDate(yesterday);
 
-  if (!completedDays[today] && !completedDays[yesterdayStr]) {
+  const pendingJournal = getPendingJournalData();
+  const isPendingFromYesterday = pendingJournal?.date === yesterdayStr;
+
+  if (!completedDays[today] && !completedDays[yesterdayStr] && !isPendingFromYesterday) {
     return 0;
   }
 
@@ -119,8 +147,17 @@ export const calculateStreak = () => {
   let checkDate = new Date(dates[0]);
 
   while (true) {
-    const dateStr = checkDate.toISOString().split('T')[0];
-    if (!completedDays[dateStr]) break;
+    const dateStr = formatDate(checkDate);
+    if (!completedDays[dateStr]) {
+      const nextDay = new Date(checkDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      const nextDayStr = formatDate(nextDay);
+      const nextDayData = localStorage.getItem(getDailyKey(nextDayStr));
+      
+      if (!nextDayData || !JSON.parse(nextDayData).completedDate === dateStr) {
+        break;
+      }
+    }
     
     currentStreak++;
     checkDate.setDate(checkDate.getDate() - 1);
@@ -130,6 +167,9 @@ export const calculateStreak = () => {
 };
 
 export const hasTodayTasks = () => {
+  const pendingJournal = getPendingJournalData();
+  if (pendingJournal) return true;
+  
   const dailyData = getDailyData();
   return dailyData?.tasks && dailyData.tasks.length > 0;
 };

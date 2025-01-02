@@ -5,7 +5,7 @@ import { Plus, Star, StarOff, Edit } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import Layout from "./Layout"
 import { useNavigate } from "react-router-dom"
-import { updateTasks, getDailyData, isDayCompleted } from "@/utils/dailyStorage"
+import { updateTasks, getDailyData, isDayCompleted, getPendingJournalData } from "@/utils/dailyStorage"
 
 export default function NewDay() {
   const navigate = useNavigate();
@@ -16,17 +16,25 @@ export default function NewDay() {
   const [editingGoalId, setEditingGoalId] = useState(null);
   const [editingText, setEditingText] = useState("");
   const [dayCompleted, setDayCompleted] = useState(false);
+  const [pendingJournal, setPendingJournal] = useState(null);
 
   const newGoalInputRef = useRef(null);
   const editGoalInputRef = useRef(null);
 
   useEffect(() => {
+    const pending = getPendingJournalData();
+    setPendingJournal(pending);
     
-    const dailyData = getDailyData();
-    if (dailyData?.tasks) {
-      setGoals(dailyData.tasks);
+    if (pending) {
+      setGoals(pending.tasks);
+      setDayCompleted(pending.isDayCompleted);
+    } else {
+      const dailyData = getDailyData();
+      if (dailyData?.tasks) {
+        setGoals(dailyData.tasks);
+      }
+      setDayCompleted(isDayCompleted());
     }
-    setDayCompleted(isDayCompleted());
   }, []);
 
   useEffect(() => {
@@ -94,7 +102,11 @@ export default function NewDay() {
     <Layout>
       <div className="w-full max-w-md flex flex-col">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-medium">TODAY'S GOALS</h2>
+          <h2 className="text-xl font-medium">
+            {pendingJournal 
+              ? `GOALS FOR ${new Date(pendingJournal.date).toLocaleDateString()}`
+              : "TODAY'S GOALS"}
+          </h2>
           {!showNewGoal && !dayCompleted && (
             <Button 
               onClick={() => setShowNewGoal(true)} 
@@ -255,7 +267,11 @@ export default function NewDay() {
               className="w-full bg-zinc-800 hover:bg-zinc-700 py-6 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={dayCompleted}
             >
-              {dayCompleted ? "DAY COMPLETED" : "CALL IT A DAY"}
+              {dayCompleted 
+                ? "DAY COMPLETED" 
+                : pendingJournal 
+                  ? `COMPLETE ${new Date(pendingJournal.date).toLocaleDateString()} JOURNAL`
+                  : "CALL IT A DAY"}
             </Button>
           )}
         </div>
