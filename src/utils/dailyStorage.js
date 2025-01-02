@@ -74,9 +74,14 @@ export const getAllDailyLogs = () => {
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key?.startsWith(keyPrefix)) {
-      const data = JSON.parse(localStorage.getItem(key));
-      const date = key.replace(keyPrefix, '');
-      logs.push({ date, ...data });
+      try {
+        const data = JSON.parse(localStorage.getItem(key));
+        const date = key.replace(keyPrefix, '');
+        logs.push({ date, ...data });
+      } catch (error) {
+        console.error(`Failed to parse data for key ${key}:`, error);
+        continue;
+      }
     }
   }
   
@@ -90,11 +95,15 @@ export const getCompletedDays = () => {
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key?.startsWith(keyPrefix)) {
-      const data = JSON.parse(localStorage.getItem(key));
-      if (data.isDayCompleted) {
-        const date = key.replace(keyPrefix, '');
-        logs[date] = data.finalScore || 0;
-        // console.log('Found completed day in storage:', date, data); // Debug log
+      try {
+        const data = JSON.parse(localStorage.getItem(key));
+        if (data.isDayCompleted) {
+          const date = key.replace(keyPrefix, '');
+          logs[date] = data.finalScore || 0;
+        }
+      } catch (error) {
+        console.error(`Failed to parse data for key ${key}:`, error);
+        continue;
       }
     }
   }
