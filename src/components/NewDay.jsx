@@ -5,7 +5,7 @@ import { Plus, Star, StarOff, Edit } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import Layout from "./Layout"
 import { useNavigate } from "react-router-dom"
-import { updateTasks, getDailyData, isDayCompleted, getPendingJournalData } from "@/utils/dailyStorage"
+import { updateTasks, getDailyData, isDayCompleted, getPendingJournalData, getCurrentDate } from "@/utils/dailyStorage"
 
 export default function NewDay() {
   const navigate = useNavigate();
@@ -264,12 +264,12 @@ export default function NewDay() {
           {goals.length > 0 && (
             <Button
               onClick={() => navigate('/reflect')}
-              className="w-full bg-zinc-800 hover:bg-zinc-700 py-6 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-zinc-800 hover:bg-zinc-700 py-6 text-lg disabled:opacity-50 disabled:cursor-not-allowed mb-4"
               disabled={dayCompleted}
             >
               {dayCompleted 
                 ? "DAY COMPLETED" 
-                : pendingJournal 
+                : pendingJournal && pendingJournal.date !== getCurrentDate()
                   ? `COMPLETE ${new Date(pendingJournal.date).toLocaleDateString()} JOURNAL`
                   : "CALL IT A DAY"}
             </Button>
