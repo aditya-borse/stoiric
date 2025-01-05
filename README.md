@@ -43,6 +43,8 @@ npm install
 npm run dev
 ```
 
+> IMPORTANT: Make sure to create a firebase project refer to the [.env.example](.env.example) to setup the environment variables
+
 ## Contributing
 
 Contributions are welcome! Feel free to:
